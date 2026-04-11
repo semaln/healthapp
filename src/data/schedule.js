@@ -1,7 +1,8 @@
-// Indexed 0=måndag ... 6=söndag
+// Indexed 0=måndag ... 6=söndag (måndag-baserad vecka)
 export const WEEKLY_SCHEDULE = [
   {
     day: 'Måndag',
+    dayShort: 'Mån',
     type: 'strength',
     passId: 'A',
     label: 'Pass A',
@@ -12,15 +13,18 @@ export const WEEKLY_SCHEDULE = [
   },
   {
     day: 'Tisdag',
+    dayShort: 'Tis',
     type: 'cardio',
+    passId: null,
     label: 'Lugn löpning',
-    description: '30–45 min, låg puls',
+    description: '30–45 min, låg puls (prata-tempo)',
     extra: 'Promenad 20–30 min',
     icon: '🏃',
     color: 'primary-light',
   },
   {
     day: 'Onsdag',
+    dayShort: 'Ons',
     type: 'strength',
     passId: 'B',
     label: 'Pass B',
@@ -31,7 +35,9 @@ export const WEEKLY_SCHEDULE = [
   },
   {
     day: 'Torsdag',
+    dayShort: 'Tor',
     type: 'rest',
+    passId: null,
     label: 'Vila',
     description: 'Aktiv återhämtning',
     extra: 'Promenad 20–30 min',
@@ -40,26 +46,31 @@ export const WEEKLY_SCHEDULE = [
   },
   {
     day: 'Fredag',
+    dayShort: 'Fre',
     type: 'strength',
     passId: 'C',
     label: 'Pass C',
-    description: 'Helkropp isometriskt',
+    description: 'Helkropp, isometriskt fokus',
     extra: 'Promenad 20–30 min',
     icon: '💪',
     color: 'primary',
   },
   {
     day: 'Lördag',
+    dayShort: 'Lör',
     type: 'cardio',
+    passId: null,
     label: 'Lugn löpning',
-    description: '30–45 min, låg puls',
+    description: '30–45 min, låg puls (prata-tempo)',
     extra: 'Promenad 20–30 min',
     icon: '🏃',
     color: 'primary-light',
   },
   {
     day: 'Söndag',
+    dayShort: 'Sön',
     type: 'rest',
+    passId: null,
     label: 'Vila',
     description: 'Fullständig vila',
     extra: 'Längre promenad 45–60 min',
