@@ -3,6 +3,7 @@ import PageHeader from '../layout/PageHeader.jsx'
 import Card from '../ui/Card.jsx'
 import ExerciseList from '../features/ExerciseList.jsx'
 import IsometricTimer from '../features/IsometricTimer.jsx'
+import BreathingGuide from '../features/BreathingGuide.jsx'
 import { WEEKLY_SCHEDULE } from '../../data/schedule.js'
 import { EXERCISES } from '../../data/exercises.js'
 import { getWeekdayIndex } from '../../utils/dateUtils.js'
@@ -165,6 +166,9 @@ export default function TrainingPage() {
         ) : (
           <RestGuidance day={todayDay} />
         )}
+
+        {/* Breathing guide */}
+        <BreathingGuide />
 
         {/* Full week list */}
         <Card>

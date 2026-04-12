@@ -1,5 +1,5 @@
 import Card from '../ui/Card.jsx'
-import { getDailyMealSuggestions } from '../../data/meals.js'
+import { useDailyMeals } from '../../hooks/useMeals.js'
 import { getTodayKey } from '../../utils/dateUtils.js'
 
 const MEAL_ICONS = {
@@ -39,7 +39,7 @@ function MealItem({ mealKey, meal }) {
 }
 
 export default function MealSuggestion() {
-  const suggestions = getDailyMealSuggestions(getTodayKey())
+  const suggestions = useDailyMeals(getTodayKey())
 
   return (
     <Card>
