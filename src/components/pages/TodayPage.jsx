@@ -1,12 +1,25 @@
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Settings } from 'lucide-react'
 import Card from '../ui/Card.jsx'
 import DailyChecklist from '../features/DailyChecklist.jsx'
 import MealSuggestion from '../features/MealSuggestion.jsx'
 import StreakCounter from '../features/StreakCounter.jsx'
+import BreathingSession from '../features/BreathingSession.jsx'
 import { useChecklist } from '../../hooks/useChecklist.js'
 import { formatDateLong, getGreeting, getWeekdayIndex } from '../../utils/dateUtils.js'
 import { WEEKLY_SCHEDULE } from '../../data/schedule.js'
+import { breathingExercises } from '../../data/breathingExercises.js'
+
+function getRecommendedExercise() {
+  const hour = new Date().getHours()
+  let id
+  if (hour >= 6 && hour < 11) id = 'extended_exhale'
+  else if (hour >= 11 && hour < 17) id = 'physiological_sigh'
+  else if (hour >= 17 && hour < 22) id = 'weil_478'
+  else id = 'coherent'
+  return breathingExercises.find((e) => e.id === id) ?? breathingExercises[0]
+}
 
 const TYPE_STYLES = {
   strength: { bg: 'bg-primary', text: 'text-white', dot: '#1d3528' },
@@ -17,6 +30,7 @@ const TYPE_STYLES = {
 export default function TodayPage() {
   const navigate = useNavigate()
   const { checklist, toggle, checkedCount, totalCount } = useChecklist()
+  const [breathingSession, setBreathingSession] = useState(null)
   const todaySchedule = WEEKLY_SCHEDULE[getWeekdayIndex()]
   const greeting = getGreeting()
   const dateStr = formatDateLong()
@@ -87,6 +101,44 @@ export default function TodayPage() {
           </div>
         </Card>
 
+        {/* Breathing card */}
+        {(() => {
+          const exercise = getRecommendedExercise()
+          const hour = new Date().getHours()
+          const isMorning = hour >= 6 && hour < 12
+          const isDone = isMorning ? checklist.morning_breathing : checklist.evening_breathing
+          return (
+            <Card>
+              <div className="flex items-center gap-3">
+                <div
+                  className="w-11 h-11 rounded-xl flex items-center justify-center text-xl flex-shrink-0"
+                  style={{ background: exercise.color + '18' }}
+                >
+                  🫁
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-sm font-sans font-semibold text-text-primary">
+                    Andning
+                    {isDone && (
+                      <span className="ml-2 text-xs font-normal text-green-600">✓ klar</span>
+                    )}
+                  </div>
+                  <div className="text-xs font-sans text-text-secondary truncate mt-0.5">
+                    {exercise.name} · {exercise.shortName}
+                  </div>
+                </div>
+                <button
+                  onClick={() => setBreathingSession(exercise)}
+                  className="flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-sans font-medium text-white active:scale-95 transition-all"
+                  style={{ background: exercise.color }}
+                >
+                  Starta
+                </button>
+              </div>
+            </Card>
+          )
+        })()}
+
         {/* Daily checklist */}
         <Card>
           <h2 className="section-label mb-3">Daglig checklista</h2>
@@ -101,6 +153,13 @@ export default function TodayPage() {
         {/* Meal suggestions */}
         <MealSuggestion />
       </div>
+
+      {breathingSession && (
+        <BreathingSession
+          exercise={breathingSession}
+          onClose={() => setBreathingSession(null)}
+        />
+      )}
     </div>
   )
 }
