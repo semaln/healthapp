@@ -11,26 +11,33 @@ const NAV_ITEMS = [
 
 export default function BottomNav() {
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 max-w-lg mx-auto">
-      <div
-        className="flex bg-white border-t border-border"
-        style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
-      >
+    <nav
+      className="fixed bottom-0 left-0 right-0 z-50 max-w-lg mx-auto px-3"
+      style={{ paddingBottom: 'max(env(safe-area-inset-bottom), 10px)' }}
+    >
+      <div className="glass-nav rounded-2xl flex overflow-hidden">
         {NAV_ITEMS.map(({ to, icon: Icon, label, exact }) => (
           <NavLink
             key={to}
             to={to}
             end={exact}
             className={({ isActive }) =>
-              `flex-1 flex flex-col items-center justify-center py-2 gap-0.5 transition-colors ${
-                isActive ? 'text-primary' : 'text-text-secondary'
+              `flex-1 flex flex-col items-center justify-center py-2.5 gap-0.5 transition-all duration-200 ${
+                isActive
+                  ? 'text-primary'
+                  : 'text-text-secondary hover:text-text-primary'
               }`
             }
           >
             {({ isActive }) => (
               <>
-                <Icon size={22} strokeWidth={isActive ? 2.5 : 1.8} />
-                <span className={`text-[10px] font-medium ${isActive ? 'text-primary' : 'text-text-secondary'}`}>
+                <div
+                  className="w-8 h-8 flex items-center justify-center rounded-xl transition-all duration-200"
+                  style={isActive ? { background: 'rgba(29,53,40,0.08)' } : {}}
+                >
+                  <Icon size={20} strokeWidth={isActive ? 2.2 : 1.6} />
+                </div>
+                <span className={`text-[10px] font-medium tracking-wide ${isActive ? 'text-primary' : 'text-text-secondary'}`}>
                   {label}
                 </span>
               </>

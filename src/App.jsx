@@ -5,6 +5,7 @@ import FoodPage from './components/pages/FoodPage.jsx'
 import TrainingPage from './components/pages/TrainingPage.jsx'
 import MeasurementPage from './components/pages/MeasurementPage.jsx'
 import GuidePage from './components/pages/GuidePage.jsx'
+import SettingsPage from './components/pages/SettingsPage.jsx'
 
 export default function App() {
   return (
@@ -16,6 +17,7 @@ export default function App() {
           <Route path="/traning" element={<TrainingPage />} />
           <Route path="/matning" element={<MeasurementPage />} />
           <Route path="/guide" element={<GuidePage />} />
+          <Route path="/installningar" element={<SettingsPage />} />
         </Routes>
       </main>
       <BottomNav />

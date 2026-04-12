@@ -74,7 +74,7 @@ function LivsmedelsTab() {
         placeholder="Sök livsmedel..."
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        className="w-full px-4 py-2.5 rounded-xl border border-border bg-white text-sm focus:outline-none focus:border-primary-light"
+        className="input-field"
       />
       {filtered.map((cat) => (
         <ExpandableSection
@@ -108,11 +108,11 @@ function LivsmedelsTab() {
 function UndvikTab() {
   return (
     <div className="p-4 space-y-3">
-      <Card className="bg-red-50 border-red-100">
-        <p className="text-sm text-accent-red font-medium">
+      <div className="card p-4 border-l-4 border-accent-red bg-cream">
+        <p className="text-sm font-sans text-accent-red font-medium">
           Begränsa eller undvik dessa livsmedel för bättre hjärthälsa.
         </p>
-      </Card>
+      </div>
       {AVOID_ITEMS.map((section) => (
         <ExpandableSection
           key={section.category}

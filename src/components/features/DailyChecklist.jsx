@@ -20,48 +20,60 @@ export default function DailyChecklist({ checklist, toggle, checkedCount, totalC
 
   return (
     <div>
-      {/* Progress bar */}
-      <div className="flex items-center justify-between mb-3">
-        <span className="text-sm text-text-secondary">
-          {checkedCount} av {totalCount} avbockade
+      {/* Progress */}
+      <div className="flex items-center justify-between mb-2">
+        <span className="text-[11px] font-sans font-medium text-text-secondary uppercase tracking-widest">
+          Framsteg
         </span>
-        <span className="text-sm font-semibold text-primary">{percentage}%</span>
+        <span className="text-sm font-semibold font-sans text-primary tabular-nums">
+          {checkedCount}<span className="text-text-secondary font-normal">/{totalCount}</span>
+        </span>
       </div>
-      <div className="w-full bg-surface rounded-full h-2 mb-4">
+      <div className="w-full bg-surface rounded-full h-1.5 mb-4 overflow-hidden">
         <div
-          className="bg-primary-light h-2 rounded-full transition-all duration-500"
-          style={{ width: `${percentage}%` }}
+          className="h-1.5 rounded-full transition-all duration-700 ease-out"
+          style={{
+            width: `${percentage}%`,
+            background: percentage === 100
+              ? 'linear-gradient(90deg, #4d7a56, #1d3528)'
+              : 'linear-gradient(90deg, #6b8f71, #4d7a56)',
+          }}
         />
       </div>
 
       {/* Items */}
-      <div className="space-y-1">
-        {visibleItems.map((item) => {
+      <div className="space-y-0.5">
+        {visibleItems.map((item, i) => {
           const checked = checklist[item.key] || false
           return (
             <button
               key={item.key}
               onClick={() => toggle(item.key)}
-              className={`w-full flex items-center gap-3 p-3 rounded-xl transition-colors text-left ${
-                checked ? 'bg-surface' : 'hover:bg-gray-50'
-              }`}
+              style={{ animationDelay: `${i * 0.04}s` }}
+              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-150 text-left animate-fade-up"
+              style={checked ? { background: 'rgba(29,53,40,0.06)' } : {}}
             >
+              {/* Custom checkbox */}
               <div
-                className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-colors ${
+                className={`w-[22px] h-[22px] rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all duration-200 ${
                   checked
-                    ? 'bg-primary border-primary'
-                    : 'border-border'
+                    ? 'bg-primary border-primary shadow-sm'
+                    : 'border-border bg-cream'
                 }`}
               >
                 {checked && (
-                  <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+                  <svg width="10" height="8" viewBox="0 0 10 8" fill="none" className="animate-check-pop">
                     <path d="M1 4L3.5 6.5L9 1" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 )}
               </div>
-              <span className="text-sm">
-                <span className="mr-1">{item.icon}</span>
-                <span className={checked ? 'line-through text-text-secondary' : 'text-text-primary'}>
+              <span className="text-sm font-sans flex items-center gap-1.5">
+                <span className="text-base leading-none">{item.icon}</span>
+                <span className={`transition-all duration-200 ${
+                  checked
+                    ? 'line-through text-text-secondary/60'
+                    : 'text-text-primary'
+                }`}>
                   {item.label}
                 </span>
               </span>

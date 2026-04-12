@@ -78,13 +78,13 @@ export default function GuidePage() {
     <div>
       <PageHeader title="Guide" subtitle="Referensinformation" />
 
-      <div className="px-4 py-3 bg-white border-b border-border sticky top-0 z-10">
+      <div className="px-4 py-3 bg-background border-b border-border/60 sticky top-0 z-10">
         <input
           type="text"
           placeholder="Sök i guiden..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full px-4 py-2.5 rounded-xl border border-border bg-surface text-sm focus:outline-none focus:border-primary-light"
+          className="input-field"
         />
       </div>
 
