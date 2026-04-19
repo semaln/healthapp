@@ -1,6 +1,7 @@
 const express = require('express')
 const cors = require('cors')
 const { getData, setData, getAllData } = require('./db')
+const { getClient, invalidateSession } = require('./garmin')
 
 const app = express()
 const PORT = process.env.PORT || 3000
@@ -56,6 +57,43 @@ app.put('/data/:key', auth, async (req, res) => {
   } catch (e) {
     console.error('PUT /data/:key error:', e)
     res.status(500).json({ error: 'Server error' })
+  }
+})
+
+// Garmin today — fetches steps, body battery, stress, sleep for today
+app.get('/garmin/today', auth, async (req, res) => {
+  try {
+    const gc = await getClient()
+
+    const [summary, sleep, bodyBatteryData] = await Promise.allSettled([
+      gc.getUserSummary(),
+      gc.getSleep(),
+      gc.getBodyBattery(new Date(), new Date()),
+    ])
+
+    const s = summary.status === 'fulfilled' ? summary.value : null
+    const sl = sleep.status === 'fulfilled' ? sleep.value : null
+    const bb = bodyBatteryData.status === 'fulfilled' ? bodyBatteryData.value : null
+
+    const steps = s?.totalSteps ?? null
+    const stress = s?.averageStressLevel ?? null
+
+    // Sleep: convert seconds to hours, rounded to nearest 0.5
+    const sleepSeconds = sl?.dailySleepDTO?.sleepTimeSeconds ?? null
+    const sleepHours = sleepSeconds != null
+      ? Math.round((sleepSeconds / 3600) * 2) / 2
+      : null
+
+    // Body battery: highest charged value of the day (= morning wake-up level)
+    const bodyBattery = Array.isArray(bb) && bb.length
+      ? Math.max(...bb.map((r) => r.charged ?? 0))
+      : null
+
+    res.json({ steps, body_battery: bodyBattery, stress_score: stress, sleep_hours: sleepHours })
+  } catch (e) {
+    console.error('Garmin error:', e.message)
+    invalidateSession()
+    res.status(502).json({ error: 'Garmin fetch failed', detail: e.message })
   }
 })
 
