@@ -40,8 +40,11 @@ export default function TodayPage() {
     <div className="pb-4">
       {/* ── Hero Header ────────────────────────────────────── */}
       <div
-        className="relative px-5 pt-12 pb-8 text-white overflow-hidden"
-        style={{ background: 'linear-gradient(150deg, #1d3528 0%, #2c4f3c 55%, #1a3a2a 100%)' }}
+        className="relative px-5 pb-8 text-white overflow-hidden sticky top-0 z-10"
+        style={{
+          background: 'linear-gradient(150deg, #1d3528 0%, #2c4f3c 55%, #1a3a2a 100%)',
+          paddingTop: 'max(3rem, calc(env(safe-area-inset-top) + 1rem))',
+        }}
       >
         {/* Decorative circles */}
         <div
@@ -56,8 +59,12 @@ export default function TodayPage() {
         {/* Settings button */}
         <button
           onClick={() => navigate('/installningar')}
-          className="absolute top-4 right-4 w-9 h-9 rounded-full flex items-center justify-center transition-all active:scale-90"
-          style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.15)' }}
+          className="absolute right-4 w-9 h-9 rounded-full flex items-center justify-center transition-all active:scale-90"
+          style={{
+            background: 'rgba(255,255,255,0.1)',
+            border: '1px solid rgba(255,255,255,0.15)',
+            top: 'max(1rem, calc(env(safe-area-inset-top) + 0.5rem))',
+          }}
           aria-label="Inställningar"
         >
           <Settings size={16} color="rgba(255,255,255,0.7)" />
@@ -78,27 +85,33 @@ export default function TodayPage() {
       <div className="px-4 py-4 space-y-3 stagger">
         {/* Today's workout */}
         <Card>
-          <h2 className="section-label mb-3">
-            Idag — {todaySchedule.day}
-          </h2>
-          <div className="flex items-center gap-3.5">
-            <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-2xl flex-shrink-0 ${typeStyle.bg} ${typeStyle.text}`}>
-              {todaySchedule.icon}
-            </div>
-            <div>
-              <div className="font-sans font-semibold text-text-primary text-[15px]">
-                {todaySchedule.label}
+          <button
+            onClick={() => navigate('/traning')}
+            className="w-full text-left active:scale-[0.98] transition-all"
+          >
+            <h2 className="section-label mb-3">
+              Idag — {todaySchedule.day}
+            </h2>
+            <div className="flex items-center gap-3.5">
+              <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-2xl flex-shrink-0 ${typeStyle.bg} ${typeStyle.text}`}>
+                {todaySchedule.icon}
               </div>
-              <div className="text-sm text-text-secondary font-sans font-light mt-0.5">
-                {todaySchedule.description}
-              </div>
-              {todaySchedule.extra && (
-                <div className="text-xs text-text-secondary/70 mt-0.5 font-sans">
-                  + {todaySchedule.extra}
+              <div className="flex-1">
+                <div className="font-sans font-semibold text-text-primary text-[15px]">
+                  {todaySchedule.label}
                 </div>
-              )}
+                <div className="text-sm text-text-secondary font-sans font-light mt-0.5">
+                  {todaySchedule.description}
+                </div>
+                {todaySchedule.extra && (
+                  <div className="text-xs text-text-secondary/70 mt-0.5 font-sans">
+                    + {todaySchedule.extra}
+                  </div>
+                )}
+              </div>
+              <span className="text-text-secondary/40 text-lg">›</span>
             </div>
-          </div>
+          </button>
         </Card>
 
         {/* Breathing card */}

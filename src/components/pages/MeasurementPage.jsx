@@ -7,6 +7,7 @@ import { useLocalStorage } from '../../hooks/useLocalStorage.js'
 import { useStreak } from '../../hooks/useStreak.js'
 import { getTodayKey, getDateKey } from '../../utils/dateUtils.js'
 import { GOALS } from '../../utils/constants.js'
+import { apiGet } from '../../services/sync.js'
 
 const TABS = [
   { id: 'logg', label: 'Logg' },
@@ -72,15 +73,83 @@ function NumberField({ label, value, onChange, unit, min, max, step = 1 }) {
 
 // ─── Daglig logg ──────────────────────────────────────────────────────────────
 
+function GarminSyncButton({ onSync }) {
+  const [status, setStatus] = useState('idle') // idle | loading | ok | error
+
+  const handleSync = async () => {
+    setStatus('loading')
+    const data = await apiGet('/garmin/today', 10000)
+    if (!data || data.error) {
+      setStatus('error')
+      setTimeout(() => setStatus('idle'), 3000)
+      return
+    }
+    onSync(data)
+    setStatus('ok')
+    setTimeout(() => setStatus('idle'), 2500)
+  }
+
+  const label = status === 'loading' ? 'Hämtar…' : status === 'ok' ? 'Synkad!' : status === 'error' ? 'Misslyckades' : 'Synka Garmin'
+  const iconStyle = status === 'loading' ? 'animate-spin' : ''
+
+  return (
+    <button
+      onClick={handleSync}
+      disabled={status === 'loading'}
+      className="flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-sans font-medium transition-all active:scale-95 disabled:opacity-60"
+      style={{
+        background: status === 'ok' ? '#4d7a56' : status === 'error' ? '#d94f3a' : '#1d3528',
+        color: '#fff',
+      }}
+    >
+      {/* Garmin Connect "G" icon as simple SVG */}
+      <svg
+        width="14"
+        height="14"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className={iconStyle}
+      >
+        {status === 'loading' ? (
+          <path d="M12 2a10 10 0 0 1 0 20" />
+        ) : (
+          <>
+            <path d="M12 22C6.48 22 2 17.52 2 12S6.48 2 12 2c3.16 0 5.98 1.47 7.84 3.77" />
+            <polyline points="16 12 12 12 12 16" />
+          </>
+        )}
+      </svg>
+      {label}
+    </button>
+  )
+}
+
 function DagligLoggTab() {
   const todayKey = getTodayKey()
   const [log, setLog] = useLocalStorage(`healthlog_${todayKey}`, DEFAULT_HEALTHLOG)
   const update = (field, value) => setLog((prev) => ({ ...prev, [field]: value }))
 
+  const handleGarminSync = (data) => {
+    setLog((prev) => ({
+      ...prev,
+      ...(data.steps != null ? { steps: data.steps } : {}),
+      ...(data.body_battery != null ? { body_battery: data.body_battery } : {}),
+      ...(data.stress_score != null ? { stress_score: data.stress_score } : {}),
+      ...(data.sleep_hours != null ? { sleep_hours: data.sleep_hours } : {}),
+    }))
+  }
+
   return (
     <div className="p-4 space-y-4">
       <Card>
-        <h2 className="section-label mb-3">{todayKey}</h2>
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="section-label">{todayKey}</h2>
+          <GarminSyncButton onSync={handleGarminSync} />
+        </div>
         <NumberField label="Body Battery (uppvakning)" value={log.body_battery} onChange={(v) => update('body_battery', v)} unit="" min={0} max={100} />
         <NumberField label="Stress Score (snitt)" value={log.stress_score} onChange={(v) => update('stress_score', v)} unit="" min={0} max={100} />
         <NumberField label="Steg" value={log.steps} onChange={(v) => update('steps', v)} unit="steg" min={0} max={30000} step={500} />

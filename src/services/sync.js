@@ -69,6 +69,13 @@ export async function pushToCloud(key, value) {
 }
 
 /**
+ * Generic GET call — for use in components that need to fetch from the API.
+ */
+export async function apiGet(path, timeoutMs = 8000) {
+  return apiCall('GET', path, undefined, timeoutMs)
+}
+
+/**
  * Called before the app mounts.
  * Fetches all data from Railway and writes to localStorage,
  * skipping keys that are pending (those are newer locally).
