@@ -63,7 +63,9 @@ app.put('/data/:key', auth, async (req, res) => {
 // Garmin today — fetches steps, body battery, stress, sleep for today
 app.get('/garmin/today', auth, async (req, res) => {
   try {
+    console.log('[Garmin] Logging in...')
     const gc = await getClient()
+    console.log('[Garmin] Login OK, fetching data...')
 
     const [summary, sleep, bodyBatteryData] = await Promise.allSettled([
       gc.getUserSummary(),
@@ -71,27 +73,35 @@ app.get('/garmin/today', auth, async (req, res) => {
       gc.getBodyBattery(new Date(), new Date()),
     ])
 
+    console.log('[Garmin] summary:', summary.status, summary.reason?.message ?? '')
+    console.log('[Garmin] sleep:', sleep.status, sleep.reason?.message ?? '')
+    console.log('[Garmin] bodyBattery:', bodyBatteryData.status, bodyBatteryData.reason?.message ?? '')
+
     const s = summary.status === 'fulfilled' ? summary.value : null
     const sl = sleep.status === 'fulfilled' ? sleep.value : null
     const bb = bodyBatteryData.status === 'fulfilled' ? bodyBatteryData.value : null
 
+    if (s) console.log('[Garmin] summary keys:', Object.keys(s))
+    if (sl) console.log('[Garmin] sleep keys:', Object.keys(sl))
+    if (bb) console.log('[Garmin] bodyBattery sample:', JSON.stringify(bb?.[0]))
+
     const steps = s?.totalSteps ?? null
     const stress = s?.averageStressLevel ?? null
 
-    // Sleep: convert seconds to hours, rounded to nearest 0.5
     const sleepSeconds = sl?.dailySleepDTO?.sleepTimeSeconds ?? null
     const sleepHours = sleepSeconds != null
       ? Math.round((sleepSeconds / 3600) * 2) / 2
       : null
 
-    // Body battery: highest charged value of the day (= morning wake-up level)
     const bodyBattery = Array.isArray(bb) && bb.length
       ? Math.max(...bb.map((r) => r.charged ?? 0))
       : null
 
-    res.json({ steps, body_battery: bodyBattery, stress_score: stress, sleep_hours: sleepHours })
+    const result = { steps, body_battery: bodyBattery, stress_score: stress, sleep_hours: sleepHours }
+    console.log('[Garmin] result:', JSON.stringify(result))
+    res.json(result)
   } catch (e) {
-    console.error('Garmin error:', e.message)
+    console.error('[Garmin] FATAL:', e.message, e.stack)
     invalidateSession()
     res.status(502).json({ error: 'Garmin fetch failed', detail: e.message })
   }
