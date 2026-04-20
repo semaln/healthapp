@@ -11,9 +11,9 @@ async function getClient() {
     const password = process.env.GARMIN_PASSWORD
     if (!email || !password) throw new Error('GARMIN_EMAIL / GARMIN_PASSWORD not set')
 
-    // v1.x: login(username, password)
-    client = new GarminConnect()
-    await client.login(email, password)
+    // v1.6.x: credentials in constructor, then login()
+    client = new GarminConnect({ username: email, password })
+    await client.login()
     lastLogin = now
   }
   return client
